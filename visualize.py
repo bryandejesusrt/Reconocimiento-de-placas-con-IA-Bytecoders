@@ -27,7 +27,7 @@ def draw_border(img, top_left, bottom_right, color=(0, 255, 0), thickness=10, li
 results = pd.read_csv('./test_interpolated.csv')
 
 # load video
-video_path = 'sample.mp4'
+video_path = 'video_modelo.mp4'
 cap = cv2.VideoCapture(video_path)
 
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Specify the codec
