@@ -4,7 +4,7 @@ from scipy.interpolate import interp1d
 
 
 def interpolate_bounding_boxes(data):
-    # Extract necessary data columns from input data
+    
     frame_numbers = np.array([int(row['frame_nmr']) for row in data])
     car_ids = np.array([int(float(row['car_id'])) for row in data])
     car_bboxes = np.array([list(map(float, row['car_bbox'][1:-1].split())) for row in data])
@@ -17,7 +17,6 @@ def interpolate_bounding_boxes(data):
         frame_numbers_ = [p['frame_nmr'] for p in data if int(float(p['car_id'])) == int(float(car_id))]
         print(frame_numbers_, car_id)
 
-        # Filter data for a specific car ID
         car_mask = car_ids == car_id
         car_frame_numbers = frame_numbers[car_mask]
         car_bboxes_interpolated = []
@@ -37,7 +36,6 @@ def interpolate_bounding_boxes(data):
                 prev_license_plate_bbox = license_plate_bboxes_interpolated[-1]
 
                 if frame_number - prev_frame_number > 1:
-                    # Interpolate missing frames' bounding boxes
                     frames_gap = frame_number - prev_frame_number
                     x = np.array([prev_frame_number, frame_number])
                     x_new = np.linspace(prev_frame_number, frame_number, num=frames_gap, endpoint=False)
@@ -61,12 +59,10 @@ def interpolate_bounding_boxes(data):
             row['license_plate_bbox'] = ' '.join(map(str, license_plate_bboxes_interpolated[i]))
 
             if str(frame_number) not in frame_numbers_:
-                # Imputed row, set the following fields to '0'
                 row['license_plate_bbox_score'] = '0'
                 row['license_number'] = '0'
                 row['license_number_score'] = '0'
             else:
-                # Original row, retrieve values from the input data if available
                 original_row = [p for p in data if int(p['frame_nmr']) == frame_number and int(float(p['car_id'])) == int(float(car_id))][0]
                 row['license_plate_bbox_score'] = original_row['license_plate_bbox_score'] if 'license_plate_bbox_score' in original_row else '0'
                 row['license_number'] = original_row['license_number'] if 'license_number' in original_row else '0'
@@ -77,15 +73,15 @@ def interpolate_bounding_boxes(data):
     return interpolated_data
 
 
-# Load the CSV file
+# cargar datos del archivo CSV
 with open('test.csv', 'r') as file:
     reader = csv.DictReader(file)
     data = list(reader)
 
-# Interpolate missing data
+# interpolar los datos faltantes
 interpolated_data = interpolate_bounding_boxes(data)
 
-# Write updated data to a new CSV file
+# Actualizar el archivo CSV con los datos interpolados
 header = ['frame_nmr', 'car_id', 'car_bbox', 'license_plate_bbox', 'license_plate_bbox_score', 'license_number', 'license_number_score']
 with open('test_interpolated.csv', 'w', newline='') as file:
     writer = csv.DictWriter(file, fieldnames=header)
