@@ -9,7 +9,7 @@ coco_model = YOLO("yolov8n.pt")
 licence_plate_detector = YOLO('./models/license_plate_detector.pt')
 
 # load video
-cap = cv2.VideoCapture('./video_modelo.mp4')
+cap = cv2.VideoCapture('./placa.mp4')
 
 mot_tracker = Sort()
 
